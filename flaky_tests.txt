@@ -1,0 +1,2 @@
+mod/forum/tests/behat/grade_view_discussion.feature|Viewing a discussion while grading is fullscreen
+
