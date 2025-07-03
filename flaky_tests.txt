@@ -1,2 +1,3 @@
-mod/forum/tests/behat/grade_view_discussion.feature|Viewing a discussion while grading is fullscreen
-
+lib/tests/behat/sample.feature|Chrome random failure|chrome
+lib/tests/behat/sample.feature|Firefox random failure|firefox
+lib/tests/behat/sample.feature|Random failure that happens on both browsers|all
