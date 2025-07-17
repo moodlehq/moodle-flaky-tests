@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Script to remove flaky tests based on branch and browser.
+
+if [[ $# -lt 1 ]]; then
+    echo "Usage: $0 <branch>_<browser|something>"
+    exit 1
+fi
+
+branch_browser=$1
+flaky_tests_file="flaky_tests.txt"
+
+# Ensure the flaky tests file exists.
+if [[ ! -f "${flaky_tests_file}" ]]; then
+    echo "Error: Flaky tests file '${flaky_tests_file}' not found."
+    exit 1
+fi
+
+# Process the flaky tests file and remove entries based on the branch and browser.
+grep -v "${branch_browser}" "${flaky_tests_file}" > "${flaky_tests_file}.tmp" && mv "${flaky_tests_file}.tmp" "${flaky_tests_file}"
+
+echo "Removed flaky tests for '${branch_browser}' from '${flaky_tests_file}'."
