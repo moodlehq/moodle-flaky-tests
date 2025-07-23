@@ -1,0 +1,50 @@
+#!/bin/bash
+
+# This script injects a @skip tag into specified flaky scenarios in Moodle Behat test files.
+# It reads a file containing flaky scenarios and their corresponding file paths,
+# then modifies the test files to include the @skip tag above the specified scenarios.
+
+# Ensure the script receives three parameters: branch, browser, and Moodle directory path/
+if [[ $# -ne 3 ]]; then
+    echo "Usage: $0 <branch> <browser> <path/to/moodle/root>"
+    exit 1
+fi
+
+branch=$1
+browser=$2
+moodle_dir=$3
+
+# Build the flaky scenarios file name.
+FLAKY_SCENARIOS_FILE="$(dirname "$(realpath "$0")")/${branch}_${browser}_flaky_tests.txt"
+echo "Running inject_skip_tag script with ${FLAKY_SCENARIOS_FILE}"
+
+# Check if the file exists
+if [[ ! -f "${FLAKY_SCENARIOS_FILE}" ]]; then
+    echo "Error: Flaky scenarios file not found at ${FLAKY_SCENARIOS_FILE}"
+    exit 1
+fi
+
+# Process each line in the file.
+while IFS='|' read -r filepath scenario_name; do
+    # Skip empty lines or comments
+    if [[ -z "${filepath}" || -z "${scenario_name}" || "${filepath}" =~ ^# ]]; then
+        continue
+    fi
+
+    # Prepend the Moodle directory path to the filepath.
+    full_filepath="${moodle_dir}/${filepath}"
+
+    # Check if the test file exists.
+    if [[ ! -f "${full_filepath}" ]]; then
+        echo "Error: Test file not found at ${full_filepath}"
+        continue
+    fi
+
+    # Inject the @skip tag above the scenario.
+    if grep -q "Scenario: ${scenario_name}" "${full_filepath}"; then
+        sed -i "/Scenario: ${scenario_name}/i @skip" "${full_filepath}"
+        echo "Injected @skip tag into ${full_filepath} for scenario: ${scenario_name}"
+    else
+        echo "Warning: Scenario '${scenario_name}' not found in ${full_filepath}"
+    fi
+done < "${FLAKY_SCENARIOS_FILE}"
