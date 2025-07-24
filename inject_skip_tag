@@ -40,9 +40,42 @@ while IFS='|' read -r filepath scenario_name; do
         continue
     fi
 
+    escaped_scenario_name=$(printf '%s\n' "$scenario_name" | sed -e 's/[.[\*^$/]/\\&/g')
+
     # Inject the @skip tag above the scenario.
-    if grep -q "Scenario: ${scenario_name}" "${full_filepath}"; then
-        sed -i "/Scenario: ${scenario_name}/i @skip" "${full_filepath}"
+    if grep -q -E ": ${scenario_name}$" "${full_filepath}"; then
+        awk -v scenario="$scenario_name" '
+      {
+        lines[++n] = $0
+      }
+      $0 ~ "^[[:space:]]*Scenario: " scenario "$" {
+        sceneline = n
+        tagline = n - 1
+
+        # Extract indentation
+        indent = gensub(/^([[:space:]]*).*/, "\\1", 1, lines[sceneline])
+
+        if (tagline > 0) {
+          if (lines[tagline] ~ /^[[:space:]]*@/) {
+            if (lines[tagline] !~ /(^|[[:space:]])@skip([[:space:]]|$)/) {
+              lines[tagline] = lines[tagline] " @skip"
+            }
+          } else {
+            # Shift lines down
+            for (i = n + 1; i > sceneline; i--) {
+              lines[i] = lines[i - 1]
+            }
+            lines[sceneline] = indent "@skip"
+            n++
+          }
+        }
+      }
+      END {
+        for (i = 1; i <= n; i++) {
+          print lines[i]
+        }
+      }
+      ' "$full_filepath" > "$full_filepath.tmp" && mv "$full_filepath.tmp" "$full_filepath"
         echo "Injected @skip tag into ${full_filepath} for scenario: ${scenario_name}"
     else
         echo "Warning: Scenario '${scenario_name}' not found in ${full_filepath}"
