@@ -1,0 +1,2 @@
+mod/forum/tests/behat/grade_view_discussion.feature|Viewing a discussion while grading is fullscreen
+course/tests/behat/course_controls.feature|General activities course controls using topics and weeks formats, and paged mode and not paged mode works as expected

@@ -42,13 +42,13 @@ while IFS='|' read -r filepath scenario_name; do
 
     escaped_scenario_name=$(printf '%s\n' "$scenario_name" | sed -e 's/[.[\*^$/]/\\&/g')
 
-    # Inject the @skip tag above the scenario.
-    if grep -q -E ": ${scenario_name}$" "${full_filepath}"; then
+    # Inject the @skip tag above the scenario or scenario outline.
+    if grep -q -E ":\s*${scenario_name}$" "${full_filepath}"; then
         awk -v scenario="$scenario_name" '
       {
         lines[++n] = $0
       }
-      $0 ~ "^[[:space:]]*Scenario: " scenario "$" {
+      $0 ~ "^[[:space:]]*Scenario( Outline)?: " scenario "$" {
         sceneline = n
         tagline = n - 1
 
