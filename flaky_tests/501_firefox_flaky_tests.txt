@@ -6,3 +6,4 @@ public/contentbank/tests/behat/events.feature|Content created and uploaded event
 public/badges/tests/behat/criteria_cohort.feature|Award badge based on a multiple cohort membership or other criteria.
 public/badges/tests/behat/criteria_cohort.feature|Award badge based on a single cohort membership or other criteria.
 public/badges/tests/behat/view_badge.feature|Display badge with ANY criteria
+public/mod/workshop/tests/behat/workshop_completion_pass_grade.feature|As teacher, I can see the completion status of students in the workshop activity
