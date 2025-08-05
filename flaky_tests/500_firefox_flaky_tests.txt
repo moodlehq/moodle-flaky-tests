@@ -2,5 +2,5 @@ contentbank/contenttype/h5p/tests/behat/admin_replace_content.feature|Admins can
 blocks/tests/behat/hidden_block_region.feature|Check that a region with only hidden blocks is not docked in editing mode (javascript enabled)
 contentbank/tests/behat/view_preferences.feature|Display the number of times a content is used in file details view
 badges/tests/behat/criteria_cohort.feature|Award badge based on a multiple cohort membership or other criteria.
-badges/contentbank/tests/behat/edit_content.feature|Users can edit content if they have the required permission
+contentbank/tests/behat/edit_content.feature|Users can edit content if they have the required permission
 badges/tests/behat/view_badge.feature|Display badge with ANY criteria
