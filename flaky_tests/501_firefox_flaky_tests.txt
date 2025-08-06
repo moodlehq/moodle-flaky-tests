@@ -8,3 +8,7 @@ public/badges/tests/behat/criteria_cohort.feature|Award badge based on a multipl
 public/badges/tests/behat/criteria_cohort.feature|Award badge based on a single cohort membership or other criteria.
 public/badges/tests/behat/view_badge.feature|Display badge with ANY criteria
 public/mod/workshop/tests/behat/workshop_completion_pass_grade.feature|As teacher, I can see the completion status of students in the workshop activity
+public/user/tests/behat/delete_users.feature|Deleting users who have unread messages sent or received
+public/mod/scorm/tests/behat/multisco_review_mode.feature|Test review mode with all scos completed.
+public/user/tests/behat/custom_profile_fields_manual.feature|Manual creation of basic custom profile fields
+public/contentbank/tests/behat/edit_content.feature|Users can see the Add button if there is content type available for creation
