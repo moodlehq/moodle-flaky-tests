@@ -25,7 +25,7 @@ fi
 echo "Running inject_skip_tag script with ${FLAKY_SCENARIOS_FILE}"
 
 # Process each line in the file.
-while IFS='|' read -r filepath scenario_name; do
+while IFS='|' read -r scenario_name filepath; do
     # Skip empty lines or comments
     if [[ -z "${filepath}" || -z "${scenario_name}" || "${filepath}" =~ ^# ]]; then
         continue

@@ -1,14 +1,23 @@
-public/contentbank/contenttype/h5p/tests/behat/admin_replace_content.feature|Admins can replace the original .h5p file with a new one
-public/blocks/tests/behat/hidden_block_region.feature|Check that a region with only hidden blocks is not docked in editing mode (javascript enabled)
-public/contentbank/tests/behat/view_preferences.feature|Display the number of times a content is used in file details view
-public/contentbank/tests/behat/view_preferences.feature|There are several views for displaying contents into the content bank
-public/contentbank/tests/behat/edit_content.feature|Users can edit content if they have the required permission
-public/contentbank/tests/behat/events.feature|Content created and uploaded events when uploading a content file
-public/badges/tests/behat/criteria_cohort.feature|Award badge based on a multiple cohort membership or other criteria.
-public/badges/tests/behat/criteria_cohort.feature|Award badge based on a single cohort membership or other criteria.
-public/badges/tests/behat/view_badge.feature|Display badge with ANY criteria
-public/mod/workshop/tests/behat/workshop_completion_pass_grade.feature|As teacher, I can see the completion status of students in the workshop activity
-public/user/tests/behat/delete_users.feature|Deleting users who have unread messages sent or received
-public/mod/scorm/tests/behat/multisco_review_mode.feature|Test review mode with all scos completed.
-public/user/tests/behat/custom_profile_fields_manual.feature|Manual creation of basic custom profile fields
-public/contentbank/tests/behat/edit_content.feature|Users can see the Add button if there is content type available for creation
+Admins can replace the original .h5p file with a new one|public/contentbank/contenttype/h5p/tests/behat/admin_replace_content.feature
+Check that a region with only hidden blocks is not docked in editing mode (javascript enabled)|public/blocks/tests/behat/hidden_block_region.feature
+Display the number of times a content is used in file details view|public/contentbank/tests/behat/view_preferences.feature
+There are several views for displaying contents into the content bank|public/contentbank/tests/behat/view_preferences.feature
+Users can edit content if they have the required permission|public/contentbank/tests/behat/edit_content.feature
+Content created and uploaded events when uploading a content file|public/contentbank/tests/behat/events.feature
+Award badge based on a multiple cohort membership or other criteria.|public/badges/tests/behat/criteria_cohort.feature
+Award badge based on a single cohort membership or other criteria.|public/badges/tests/behat/criteria_cohort.feature
+Display badge with ANY criteria|public/badges/tests/behat/view_badge.feature
+As teacher, I can see the completion status of students in the workshop activity|public/mod/workshop/tests/behat/workshop_completion_pass_grade.feature
+Deleting users who have unread messages sent or received|public/user/tests/behat/delete_users.feature
+Test review mode with all scos completed.|public/mod/scorm/tests/behat/multisco_review_mode.feature
+Manual creation of basic custom profile fields|public/user/tests/behat/custom_profile_fields_manual.feature
+Users can see the Add button if there is content type available for creation|public/contentbank/tests/behat/edit_content.feature
+Block a user who then gets an elevated role|public/message/tests/behat/block_user.feature
+Preview a user preset as list view template in database|public/mod/data/tests/behat/preview_preset.feature
+Apply user preset from preview in database|public/mod/data/tests/behat/preview_preset.feature
+Users can see the Add button if there is content type available for creation|public/contentbank/tests/behat/edit_content.feature
+View full profiles of someone in the same group in a course with separate groups.|public/user/tests/behat/view_full_profile.feature
+Send a 'contact request' to someone to add a contact|public/message/tests/behat/message_drawer_manage_contacts.feature
+Unsent messages will notify users and give them a chance to send it|public/message/tests/behat/message_send_messages.feature
+Decline a 'contact request' from someone|public/message/tests/behat/message_drawer_manage_contacts.feature
+Users can create new content if they have the required permission|public/contentbank/tests/behat/edit_content.feature
