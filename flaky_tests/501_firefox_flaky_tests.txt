@@ -21,3 +21,8 @@ Send a 'contact request' to someone to add a contact|public/message/tests/behat/
 Unsent messages will notify users and give them a chance to send it|public/message/tests/behat/message_send_messages.feature
 Decline a 'contact request' from someone|public/message/tests/behat/message_drawer_manage_contacts.feature
 Users can create new content if they have the required permission|public/contentbank/tests/behat/edit_content.feature
+Sending a message when 'User enter to send' is enabled|public/message/tests/behat/message_manage_preferences.feature
+Preview a user preset as single view template in database|public/mod/data/tests/behat/preview_preset.feature
+Block a user|public/message/tests/behat/block_user.feature
+Check activities using topics and weeks formats, and paged mode and not paged mode|public/course/tests/behat/course_controls.feature
+Try to send a message to a private conversation is not contact but you are allowed to send a message|public/message/tests/behat/message_send_messages.feature
