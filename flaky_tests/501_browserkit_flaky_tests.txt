@@ -1,0 +1,1 @@
+Policy acceptance is prioritised when MFA is enabled|public/admin/tool/policy/tests/behat/acceptances.feature
