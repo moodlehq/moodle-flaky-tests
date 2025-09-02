@@ -1,0 +1,74 @@
+#!/bin/bash
+
+# This script injects a skip directive into specified flaky PHPUnit tests.
+# It is called by the main `skip_tests` orchestrator.
+
+set -e
+
+# Ensure the script receives two parameters.
+if [[ $# -ne 2 ]]; then
+    echo "Usage: $0 <branch> <path/to/moodle/root>"
+    exit 1
+fi
+
+branch=$1
+moodle_dir=$2
+
+FLAKY_TESTS_FILE="$(dirname "$(realpath "$0")")/flaky_tests/${branch}_phpunit_flaky_tests.txt"
+
+if [[ ! -f "${FLAKY_TESTS_FILE}" ]]; then
+    echo "Info: PHPUnit flaky test file not found at ${FLAKY_TESTS_FILE}, skipping."
+    exit 0
+fi
+
+echo "Processing PHPUnit tests from ${FLAKY_TESTS_FILE}"
+
+while IFS='|' read -r test_name filepath; do
+    # Skip empty lines or comments
+    if [[ -z "${filepath}" || -z "${test_name}" || "${filepath}" =~ ^# ]]; then
+        continue
+    fi
+
+    full_filepath="${moodle_dir}/${filepath}"
+
+    if [[ ! -f "${full_filepath}" ]]; then
+        echo "Error: PHPUnit file not found at ${full_filepath}"
+        continue
+    fi
+
+    # Use a robust regex that anchors the function name precisely.
+    # It matches "function", 1+ spaces, the exact test name, 0+ spaces, and an opening parenthesis.
+    if grep -q -E "function\s+${test_name}\s*\(" "${full_filepath}"; then
+        if grep -A 5 -E "function\s+${test_name}\s*\(" "${full_filepath}" | grep -q "markTestSkipped"; then
+             echo "Skipped injection: \"${test_name}\" in ${full_filepath} appears to be already skipped."
+             continue
+        fi
+
+        # The awk pattern now IDENTICALLY mirrors the grep logic, ensuring consistency.
+        # It uses "[[:space:]]+" to match one or more whitespace characters after "function".
+        # This prevents mismatches and ensures the correct line is targeted.
+        awk -v testname="$test_name" -v reason="Flaky test skipped by CI tool." '
+        BEGIN { found_function = 0 }
+        {
+            # This is the corrected, robust pattern.
+            if (found_function == 0 && $0 ~ "function[[:space:]]+" testname "[[:space:]]*\\(") {
+                found_function = 1
+            }
+
+            print
+
+            if (found_function == 1 && /{/) {
+                match($0, /^([ \t]*)/, m)
+                indent = m[1]
+                print indent "    $this->markTestSkipped(\"" reason "\");"
+                found_function = 2 # Move to "done" state
+            }
+        }
+        ' "$full_filepath" > "$full_filepath.tmp" && mv "$full_filepath.tmp" "$full_filepath"
+        echo "Injected skip for test: \"${test_name}\" in ${full_filepath}"
+    else
+        echo "Warning: Test method \"${test_name}\" not found in ${full_filepath}"
+    fi
+done < "${FLAKY_TESTS_FILE}"
+
+echo "PHPUnit skipper finished."

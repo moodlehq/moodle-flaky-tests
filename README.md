@@ -1,49 +1,94 @@
-# moodle-skip-tag-injector
+# moodle-test-skipper
 
-This project provides a script to inject the `@skip` tag into specified flaky scenarios in Moodle Behat test files. 
-This is useful for avoiding the execution of known flaky tests during Continuous Integration (CI) runs, ensuring more stable and reliable test results.
+This project provides a set of scripts to automatically skip known flaky tests for both Behat scenarios and PHPUnit tests in a Moodle environment. This is useful for avoiding the execution of these tests during Continuous Integration (CI) runs, ensuring more stable and reliable build results.
 
 ### Purpose
 
-The `inject_skip_tag` script is designed to:
-- Read a list of flaky scenarios and their corresponding file paths.
-- Modify the specified Behat test files by adding the `@skip` tag above the flaky scenarios.
-- Help streamline CI processes by skipping tests that are known to fail intermittently.
+The `moodle-test-skipper` tool is designed to:
+- Read lists of flaky Behat scenarios and PHPUnit tests from dedicated files.
+- Modify Behat test files by adding an `@skip` tag above the flaky scenarios.
+- Modify PHPUnit test files by injecting the `$this->markTestSkipped(...)` method call at the beginning of flaky test functions.
+- Help streamline CI processes by programmatically skipping tests that are known to fail intermittently.
 
-### Prerequisites
+### File Structure
 
-- A file listing the flaky scenarios in the format: `<relative_file_path>|<scenario_name>`.
-- Access to the Moodle root directory where the Behat test files are located.
+The tool is organized with an orchestrator script (`skip_tests`) that calls specialist scripts for each test type. The flaky test lists are kept in a dedicated directory.
+```
+skipper_tools/
+    ├── skip_tests                  # Main orchestrator script for CI
+    ├── inject_behat_skips          # Specialist script for Behat
+    ├── inject_phpunit_skips        # Specialist script for PHPUnit
+    └── flaky_tests/
+        ├── 501_firefox_flaky_tests.txt
+        ├── 501_phpunit_flaky_tests.txt
+        └── ...
+```
 
 ### Usage
 
-Run the script with the following parameters:
-### Parameters
+The main entry point is the `skip_tests` orchestrator script, which requires the test type as the first parameter (`behat` or `phpunit`).
 
-- `<branch>`: The branch name (used to locate the flaky scenarios file).
-- `<browser>`: The browser name (used to locate the flaky scenarios file).
-- `<path/to/moodle/root>`: The absolute path to the Moodle root directory.
+#### Skipping Behat Tests
 
-```
-./inject_skip_tag <branch> <browser> <path/to/moodle/root>
-```
-### Flaky Scenarios File
-
-The script expects a file named `<branch>_<browser>_flaky_tests.txt` in the same directory as the script. Each line in the file should follow this format:
+- **`<branch>`**: The branch name, used to find the flaky scenarios file.
+- **`<browser>`**: The browser name, used to find the flaky scenarios file.
+- **`<path/to/moodle/root>`**: The absolute path to the Moodle root directory.
 
 ```
-<relative_file_path>|<scenario_name>
+./skipper_tools/skip_tests behat <branch> <browser> <path/to/moodle/root>
 ```
 
-- `relative_file_path`: The path to the Behat test file, relative to the Moodle root directory.
+#### Skipping PHPUnit Tests
+
+- **`<branch>`**: The branch name, used to find the flaky test file.
+- **`<path/to/moodle/root>`**: The absolute path to the Moodle root directory.
+
+```
+./skipper_tools/skip_tests phpunit <branch> <path/to/moodle/root>
+```
+
+### Flaky Test Lists
+
+The scripts expect flaky test lists to be located in the `flaky_tests/` directory.
+
+#### Behat Scenarios (`..._flaky_tests.txt`)
+
+The script expects a file named `<branch>_<browser>_flaky_tests.txt`. Each line in the file should follow this format:
+
+`scenario_name|relative_file_path`
+
 - `scenario_name`: The name of the scenario to skip.
+- `relative_file_path`: The path to the `.feature` file, relative to the Moodle root.
+
+**Example:** `501_firefox_flaky_tests.txt`
+```
+Admins can replace the original .h5p file with a new one|public/contentbank/contenttype/h5p/tests/behat/admin_replace_content.feature
+Check that a region with only hidden blocks is not docked|public/blocks/tests/behat/hidden_block_region.feature
+```
+
+#### PHPUnit Tests (`..._phpunit_flaky_tests.txt`)
+
+The script expects a file named `<branch>_phpunit_flaky_tests.txt`. Each line in the file should follow this format:
+
+`test_method_name|relative_file_path`
+
+- `test_method_name`: The name of the test function to skip (e.g., `test_user_can_login`).
+- `relative_file_path`: The path to the `_test.php` file, relative to the Moodle root.
+
+**Example:** `501_phpunit_flaky_tests.txt`
+```
+test_notification_races_on_send|message/tests/output/notification_test.php
+test_assignment_submission_event|mod/assign/tests/event_test.php
+```
 
 ### Output
 
-- The script will inject the `@skip` tag above the specified scenarios in the test files.
-- It will log messages indicating success, warnings for missing scenarios, or errors for missing files.
+- The scripts will modify the specified test files in place.
+- For Behat, an `@skip` tag is added.
+- For PHPUnit, `$this->markTestSkipped(...)` is injected.
+- The console will show logs indicating success, warnings for missing tests, or errors for missing files.
 
 ## Notes
 
-- Ensure the script has execute permissions: `chmod +x inject_skip_tag`.
-- The script modifies test files in place. Use version control to track changes.
+- Ensure the scripts have execute permissions: `chmod +x skipper_tools/*`.
+- The scripts modify test files directly. It is recommended to run this tool in a CI environment where changes are ephemeral. Use version control to track any intended changes.

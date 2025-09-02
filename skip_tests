@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# Orchestrator script for skipping flaky tests.
+# This script is intended to be the main entry point called by CI.
+# It determines the test type (behat or phpunit) and calls the appropriate sub-script.
+
+set -e
+
+# The first argument must be the test type.
+type=$1
+if [[ -z "$type" ]]; then
+    echo "Error: Missing test type."
+    echo "Usage: $0 <behat|phpunit> [args...]"
+    exit 1
+fi
+
+# Get the directory where this script is located to find the sub-scripts.
+SCRIPT_DIR="$(dirname "$(realpath "$0")")"
+
+case "$type" in
+    behat)
+        # Behat requires: branch, browser, moodle_dir
+        if [[ $# -ne 4 ]]; then
+            echo "Usage: $0 behat <branch> <browser> <path/to/moodle/root>"
+            exit 1
+        fi
+        echo "--> Delegating to Behat skipper..."
+        "${SCRIPT_DIR}/inject_behat_skips" "$2" "$3" "$4"
+        ;;
+
+    phpunit)
+        # PHPUnit requires: branch, moodle_dir
+        if [[ $# -ne 3 ]]; then
+            echo "Usage: $0 phpunit <branch> <path/to/moodle/root>"
+            exit 1
+        fi
+        echo "--> Delegating to PHPUnit skipper..."
+        "${SCRIPT_DIR}/inject_phpunit_skips" "$2" "$3"
+        ;;
+
+    *)
+        echo "Error: Unknown test type '${type}'. Use 'behat' or 'phpunit'."
+        exit 1
+        ;;
+esac
+
+echo "--> Skipper orchestration finished successfully."
